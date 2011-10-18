@@ -449,8 +449,9 @@ enumSocket th len socket =
     inner
   where
     inner (E.Continue k) = do
-        bs <- liftIO $ Sock.recv socket len
         liftIO $ T.tickle th
+        bs <- liftIO $ Sock.recv socket len
+        liftIO $ T.pause th
         if S.null bs
             then E.continue k
             else k (E.Chunks [bs]) >>== inner
